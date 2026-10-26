@@ -1,0 +1,107 @@
+# ==========================================
+# 1. DEFINICIÓN DE CLASES (PILAR DE POO)
+# ==========================================
+
+class Producto:
+    def __init__(self, id_prod, nombre, precio):
+        self.__id = id_prod          # Encapsulamiento (privado)
+        self.__nombre = nombre       # Encapsulamiento (privado)
+        self.__precio = float(precio) # Encapsulamiento (privado)
+
+    # Getters para acceder a los datos de forma segura
+    def get_id(self):
+        return self.__id
+
+    def get_nombre(self):
+        return self.__nombre
+
+    def get_precio(self):
+        return self.__precio
+
+
+class Carrito:
+    def __init__(self):
+        self.__items = {}  # Diccionario para guardar los productos
+
+    def agregar(self, producto, cantidad=1):
+        id_p = producto.get_id()
+        if id_p in self.__items:
+            self.__items[id_p]["cantidad"] += cantidad
+        else:
+            self.__items[id_p] = {"producto": producto, "cantidad": cantidad}
+        print(f"-> Agregado: {producto.get_nombre()} (x{cantidad})")
+
+    def eliminar(self, id_producto):
+        if id_producto in self.__items:
+            eliminado = self.__items[id_producto]["producto"].get_nombre()
+            del self.__items[id_producto]
+            print(f"-> Eliminado del carrito: {eliminado}")
+        else:
+            print("-> El producto no está en el carrito.")
+
+    def vaciar(self):
+        self.__items.clear()
+        print("-> ¡El carrito ha sido vaciado!")
+
+    def calcular_total(self, descuento_porcentaje=0):
+        total = 0
+        for item in self.__items.values():
+            total += item["producto"].get_precio() * item["cantidad"]
+        
+        # Aplicar descuento si es mayor a 0
+        if descuento_porcentaje > 0:
+            descuento = total * (descuento_porcentaje / 100)
+            total -= descuento
+            print(f"-> Descuento aplicado: {descuento_porcentaje}%")
+            
+        return total
+
+    def mostrar_carrito(self):
+        print("\n--- CONTENIDO DEL CARRITO (VELVET GLOW) ---")
+        if not self.__items:
+            print("Tu carrito está vacío.")
+        else:
+            for item in self.__items.values():
+                p = item["producto"]
+                cant = item["cantidad"]
+                sub = p.get_precio() * cant
+                print(f"- {p.get_nombre()} | Cantidad: {cant} | Precio Unit: ${p.get_precio():.2f} | Subtotal: ${sub:.2f}")
+        print("-------------------------------------------\n")
+
+
+# ==========================================
+# 2. SIMULACIÓN DE LA TIENDA
+# ==========================================
+if __name__ == "__main__":
+    print("✨ BIENVENIDO A VELVET GLOW ✨\n")
+
+    # Crear productos de maquillaje
+    labial = Producto("1", "Labial Velvet Matte", 15.00)
+    base = Producto("2", "Base Glow Radiance", 25.50)
+    iluminador = Producto("3", "Iluminador Golden", 20.00)
+
+    # Crear el carrito de compras
+    mi_carrito = Carrito()
+
+    # 1. Agregar productos
+    mi_carrito.agregar(labial, 2)  # Añadir 2 labiales
+    mi_carrito.agregar(base, 1)    # Añadir 1 base
+    mi_carrito.agregar(iluminador, 1) #Añadir 1 iluminador
+
+    # Ver el carrito
+    mi_carrito.mostrar_carrito()
+
+    # 2. Calcular total sin descuento
+    print(f"Total a pagar: ${mi_carrito.calcular_total():.2f}\n")
+
+    # 3. Calcular total aplicando un 10% de descuento
+    print(f"Total con 10% de descuento: ${mi_carrito.calcular_total(10):.2f}\n")
+
+    # 4. Eliminar un producto (ejemplo: eliminar la base con id '2')
+    mi_carrito.eliminar("2")
+    mi_carrito.mostrar_carrito()
+    print(f"Total actual: ${mi_carrito.calcular_total():.2f}\n")
+
+    # 5. Vaciar el carrito
+    mi_carrito.vaciar()
+    mi_carrito.mostrar_carrito()
